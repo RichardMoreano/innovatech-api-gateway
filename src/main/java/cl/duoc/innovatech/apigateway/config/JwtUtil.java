@@ -6,24 +6,24 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
-import java.security.Key;
 
 @Component
 public class JwtUtil {
 
-    @Value("${security.jwt.secret:secret-key-please-change}")
+    @Value("${jwt.secret}")
     private String secret;
 
-    // Validamos y extraemos los claims del token JWT usando la clave secreta.
-    // Nota para desarrollo: la clave viene de application.properties y es sólo un ejemplo.
-    // En producción deberíamos traer la clave desde un vault y rotarla periódicamente.
+    private SecretKey getSigningKey() {
+        return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+    }
+
     public Claims validateAndGetClaims(String token) {
-        Key key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
-        return Jwts.parserBuilder()
-                .setSigningKey(key)
+        return Jwts.parser()
+                .verifyWith(getSigningKey())
                 .build()
-                .parseClaimsJws(token)
-                .getBody();
+                .parseSignedClaims(token)
+                .getPayload();
     }
 }
