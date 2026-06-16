@@ -9,4 +9,3 @@ Rutas configuradas en `application.properties`:
 - /api/proyectos/** -> http://localhost:8081
 - /api/recursos/** -> http://localhost:8082
 
-Nota: la clave JWT en `application.properties` es de ejemplo y debe ser cambiada en ambientes reales.

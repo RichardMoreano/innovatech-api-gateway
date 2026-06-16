@@ -36,10 +36,13 @@ public class JwtFilter implements WebFilter {
 
         // Modificamos la petición para meterle el usuario y el role en headers
         // Así los microservicios atrás no tienen que validar el JWT otra vez.
-            ServerHttpRequest mutated = request.mutate()
-                    .header("X-User-Name", username != null ? username : "")
-                    .header("X-User-Role", role != null ? role : "")
-                    .build();
+        // Añadimos headers compatibles con los microservicios: X-User-Id y X-User-Roles
+        ServerHttpRequest mutated = request.mutate()
+            .header("X-User-Name", username != null ? username : "")
+            .header("X-User-Role", role != null ? role : "")
+            .header("X-User-Id", username != null ? username : "")
+            .header("X-User-Roles", role != null ? role : "")
+            .build();
 
             ServerWebExchange mutatedExchange = exchange.mutate().request(mutated).build();
             return chain.filter(mutatedExchange);
